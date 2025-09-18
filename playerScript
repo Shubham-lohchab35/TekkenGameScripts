@@ -1,0 +1,50 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class PlayerScript : MonoBehaviour
+{
+
+    [Header("Player Movement")]
+    public float movementSpeed = 2f;
+    public float rotationSpeed = 10f;
+    private CharacterController characterController;
+    private Animator animator;
+
+    void Awake()
+    // Initialize Player Components
+    {
+        currentHealth = maxHealth;
+        characterController = GetComponent<CharacterController>();
+        animator = GetComponent<Animator>();
+    }
+
+    void Update()
+    // Handle Player Movement and Actions
+    {
+        PerformMovement();
+    }
+
+    void PerformMovement()
+    // Handle Player Movement based on Horizontal Input
+    {
+        float horizontalInput = Input.GetAxis("Horizontal");
+
+        Vector3 movement = new Vector3(0, 0f, horizontalInput);
+
+        if (movement != Vector3.zero)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(Vector3.forward);
+            if (horizontalInput > 0)
+                targetRotation = Quaternion.LookRotation(Vector3.forward);
+            else if (horizontalInput < 0)
+                targetRotation = Quaternion.LookRotation(Vector3.back);
+
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+
+            animator.SetFloat("MoveZ", horizontalInput);
+
+            characterController.Move(movement.normalized * movementSpeed * Time.deltaTime);
+        }
+    }
+}
