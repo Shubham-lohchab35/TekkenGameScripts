@@ -11,6 +11,7 @@ public class PlayerScript : MonoBehaviour
     private CharacterController characterController;
     private Animator animator;
 
+
     [Header("Player Movement")]
     public float attackCooldown = 0.5f;
     private float lastAttackTime;
@@ -20,6 +21,20 @@ public class PlayerScript : MonoBehaviour
     public float attackRadius = 2f;
     public Transform[] opponents;
 
+
+    [Header("Effects and Sounds")]
+
+    public ParticleSystem attack1Effect;
+    public ParticleSystem attack2Effect;
+    public ParticleSystem attack3Effect;
+    public ParticleSystem attack4Effect;
+
+    public AudioClip[] hitSound;
+
+
+    [Header("Health")]
+    public int maxHealth = 100;
+    public int currentHealth;
 
 
     void Awake()
@@ -114,6 +129,47 @@ public class PlayerScript : MonoBehaviour
             Vector3 dodgeDirection = -transform.forward * dodgeDistance;
             characterController.Move(dodgeDirection);
         }
+    }
+
+    public IEnumerator PlayHitDamageAnnimation(int takeDamage)
+    // Play hit damage animation and decrease player's health
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        // Play Hit Sound
+        if (hitSound != null && hitSound.Length > 0)
+        {
+            int randomIndex = Random.Range(0, hitSound.Length);
+            AudioSource.PlayClipAtPoint(hitSound[randomIndex], transform.position);
+        }
+
+        // Decrease Player's Health
+        currentHealth -= takeDamage;
+        
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+        
+        animator.Play("Hit");
+    }
+
+    // Attack Effects
+    public void Attack1Effect()
+    {
+        attack1Effect.Play();
+    }
+    public void Attack2Effect()
+    {
+        attack2Effect.Play();
+    }
+    public void Attack3Effect()
+    {
+        attack3Effect.Play();
+    }
+    public void Attack4Effect()
+    {
+        attack4Effect.Play();
     }
 
     void Die()
