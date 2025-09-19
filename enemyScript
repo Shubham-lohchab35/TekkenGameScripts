@@ -103,7 +103,7 @@ public class enemyScript : MonoBehaviour
         }
 
         PerformDodge();
-    
+
     }
 
     void PerformAttack(int attackIndex)
@@ -175,3 +175,4 @@ public class enemyScript : MonoBehaviour
         // Disable player controls
         Debug.Log("Enemy has died.");
     }
+}
