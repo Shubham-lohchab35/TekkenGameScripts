@@ -25,6 +25,20 @@ public class enemyScript : MonoBehaviour
     public bool isTakingDamage = false;
     public float dodgeDistance = 2f;
 
+    [Header("Effects and Sounds")]
+
+    public ParticleSystem attack1Effect;
+    public ParticleSystem attack2Effect;
+    public ParticleSystem attack3Effect;
+    public ParticleSystem attack4Effect;
+
+    public AudioClip[] hitSounds;
+
+
+    [Header("Health")]
+    public int maxHealth = 100;
+    public int currentHealth;
+
 
     void Awake()
     {
@@ -114,6 +128,45 @@ public class enemyScript : MonoBehaviour
     void createRandomNumber()
     {
         randomNumber = Random.Range(1, 5);
+    }
+
+    public IEnumerator PlayHitDamageAnnimation(int takeDamage)
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        // Play Hit sound
+        if (hitSounds != null && hitSounds.Length > 0)
+        {
+            int randomIndex = Random.Range(0, hitSounds.Length);
+            AudioSource.PlayClipAtPoint(hitSounds[randomIndex], transform.position);
+        }
+
+        // Decrease Health
+        currentHealth -= takeDamage;
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+
+        animator.Play("Hit");
+    }
+
+    public void Attack1Effect()
+    {
+        attack1Effect.Play();
+    }
+    public void Attack2Effect()
+    {
+        attack2Effect.Play();
+    }
+    public void Attack3Effect()
+    {
+        attack3Effect.Play();
+    }
+    public void Attack4Effect()
+    {
+        attack4Effect.Play();
     }
 
     void Die()
