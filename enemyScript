@@ -1,0 +1,124 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class enemyScript : MonoBehaviour
+{
+
+    [Header("Enemy Movement")]
+    public float movementSpeed = 2f;
+    public float rotationSpeed = 10f;
+    public CharacterController characterController;
+    public Animator animator;
+
+
+    [Header("Enemy Movement")]
+    public float attackCooldown = 1.5f;
+    private float lastAttackTime;
+    public int attackDamage = 5;
+    public string[] attackAnimations = { "Attack1", "Attack2", "Attack3", "Attack4" };
+    public int attackCount = 0;
+    public int randomNumber;
+    public float attackRadius = 2f;
+    public PlayerScript[] playerScripts;
+    public Transform[] players;
+    public bool isTakingDamage = false;
+    public float dodgeDistance = 2f;
+
+
+    void Awake()
+    {
+        currentHealth = maxHealth;
+        createRandomNumber();
+    }
+
+    void Update()
+    {
+        //if (attackCount == randomNumber)
+        // {
+        //attackCount = 0;
+        //createRandomNumber();
+        //}
+
+        for (int i = 0; i < playerScripts.Length; i++)
+        {
+            if (players[i].gameObject.activeSelf && Vector3.Distance(transform.position, players[i].position) <= attackRadius)
+            {
+                animator.SetFloat("MoveZ", 0f);
+
+                if (Time.time - lastAttackTime > attackCooldown)
+                {
+                    int randomAttackIndex = Random.Range(0, attackAnimations.Length);
+
+                    if (!isTakingDamage)
+                    {
+                        PerformAttack(randomAttackIndex);
+                    }
+
+                    playerScripts[i].StartCoroutine(playerScripts[i].PlayHitDamageAnnimation(attackDamage));
+                }
+            }
+            else
+            {
+                if (players[i].gameObject.activeSelf)
+                {
+                    Vector3 direction = (players[i].position - transform.position);
+                    float distance = direction.magnitude;
+                    direction.Normalize();
+
+                    // Rotate towards the player
+                    if (direction != Vector3.zero)
+                    {
+                        Quaternion targetRotation = Quaternion.LookRotation(direction);
+                        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+                    }
+
+                    // Move only if not too close
+                    if (distance > attackRadius + 0.5f) // small buffer to stop circling
+                    {
+                        characterController.Move(direction * movementSpeed * Time.deltaTime);
+                        animator.SetFloat("MoveZ", 1f); // walking animation
+                    }
+                    else
+                    {
+                        animator.SetFloat("MoveZ", 0f); // idle animation
+                    }
+                }
+            }
+
+        }
+
+        PerformDodge();
+    
+    }
+
+    void PerformAttack(int attackIndex)
+    {
+        animator.Play(attackAnimations[attackIndex]);
+
+        int damage = attackDamage;
+        Debug.Log("Enemy attacks with: " + (attackIndex + 1) + " dealed " + damage + " damage.");
+
+        lastAttackTime = Time.time;
+
+        //Loop through each opponent and apply damage
+    }
+
+    void PerformDodge()
+    {
+        animator.SetTrigger("Dodge");
+        Vector3 dodgeDirection = transform.forward * dodgeDistance;
+        characterController.SimpleMove(dodgeDirection);
+    }
+
+    void createRandomNumber()
+    {
+        randomNumber = Random.Range(1, 5);
+    }
+
+    void Die()
+    {
+        animator.Play("Die");
+        // Disable player controls
+        Debug.Log("Enemy has died.");
+    }
