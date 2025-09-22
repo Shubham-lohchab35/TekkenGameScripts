@@ -1,0 +1,20 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class HealthBar : MonoBehaviour
+{
+    public Slider healthBarslider;
+
+    public void giveFullhealth(float health)
+    {
+        healthBarslider.maxValue = health;
+        healthBarslider.value = health;
+    }
+    
+    public void setHealth(float health)
+    {
+        healthBarslider.value = health;  
+    }
+}

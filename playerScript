@@ -35,12 +35,14 @@ public class PlayerScript : MonoBehaviour
     [Header("Health")]
     public int maxHealth = 100;
     public int currentHealth;
+    public HealthBar healthBar;
 
 
     void Awake()
     // Initialize Player Components
     {
         currentHealth = maxHealth;
+        healthBar.giveFullhealth(currentHealth);
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
     }
@@ -145,6 +147,7 @@ public class PlayerScript : MonoBehaviour
 
         // Decrease Player's Health
         currentHealth -= takeDamage;
+        healthBar.setHealth(currentHealth);
         
         if (currentHealth <= 0)
         {

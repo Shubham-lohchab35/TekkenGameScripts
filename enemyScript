@@ -38,11 +38,13 @@ public class enemyScript : MonoBehaviour
     [Header("Health")]
     public int maxHealth = 100;
     public int currentHealth;
+    public HealthBar healthBar;
 
 
     void Awake()
     {
         currentHealth = maxHealth;
+        healthBar.giveFullhealth(currentHealth);
         createRandomNumber();
     }
 
@@ -143,6 +145,7 @@ public class enemyScript : MonoBehaviour
 
         // Decrease Health
         currentHealth -= takeDamage;
+        healthBar.setHealth(currentHealth);
 
         if (currentHealth <= 0)
         {
